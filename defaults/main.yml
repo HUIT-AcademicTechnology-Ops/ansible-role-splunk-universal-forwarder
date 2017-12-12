@@ -1,20 +1,6 @@
-# ansible-role-splunk-universalforwarder
-Ansible role to install and configure the Splunk Universal Forwarder
-=======
-# Ansible Role: Splunk Universal Forwarder
+---
+# defaults file for splunk_forwarder
 
-Installs and configures the Splunk Universal Forwarder on all unix systems.
-
-
-## Requirements
-
-None.
-
-## Role Variables
-
-Below are available variables for configuring the forwarder, along with default values (from `defaults/main.yml`):
-
-```
 # Installation options:
 # Role installs binary to /opt/splunkforwarder - currently, non-configurable
 # ---
@@ -60,7 +46,7 @@ splunk_uf_outputs_conf_template: outputs.conf.j2
 # Output attributes below are all optional
 splunk_uf_outputs_default_group: ""
 splunk_uf_outputs_default_extra_attributes: ""
-# Example of extra attributes within default/tcp stanza:
+# Example of extra options within default/tcp stanza:
 #   splunk_uf_outputs_default_extra_options: |
 #     compressed = true
 #     blockOnCloning = false
@@ -74,26 +60,3 @@ splunk_uf_outputs_target_groups: []
 #       server: 10.0.1.1:9996, 10.0.1.2:9995
 #       # Only added if defined
 #       compressed = true
-```
-
-## Overriding configuration templates
-
-You can override the forwarder inputs and outputs templates if the exposed variables don't cover an option you want to define.  You can either copy and modify the provided template, or extend it with [Jinja2 template inheritance](http://jinja.pocoo.org/docs/2.9/templates/#template-inheritance) and override the specific template block you need to change.
-
-## Dependencies
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-## Example Playbook
-
-    - hosts: server
-      roles:
-         - { role: huit-at.splunk-uf }
-
-## License
-
-MIT
-
-## Author Information
-
-This role was created by Jaime Bermudez in 2017 as a member of HUIT's Academic Technology group.

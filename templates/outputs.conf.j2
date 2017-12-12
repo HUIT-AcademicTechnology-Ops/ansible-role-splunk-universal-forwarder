@@ -1,0 +1,19 @@
+{% block outputs_default %}
+[tcp]
+{% if splunk_uf_outputs_default_group %}
+defaultGroup = {{ splunk_uf_outputs_default_group }}
+{% endif %}
+{% if splunk_uf_outputs_default_extra_attributes %}
+{{ splunk_uf_outputs_default_extra_attributes }}
+{% endif %}
+{% endblock %}
+
+{% block target_groups %}
+{% for target_group in splunk_uf_outputs_target_groups %}
+[tcpout:{{ target_group.name }}]
+server = {{ target_group.server }}
+{% if target_group.compressed is defined %}
+compressed = {{ target_group.compressed }}
+{% endif %}
+{% endfor %}
+{% endblock %}

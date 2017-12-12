@@ -1,0 +1,65 @@
+---
+# tasks file for splunk_forwarder
+
+- block:
+  - name: add splunk user group to system
+    group:
+      name: "{{ splunk_uf_system_user }}"
+      state: present
+
+  - name: add splunk user
+    user:
+      name: "{{ splunk_uf_system_user }}"
+      group: "{{ splunk_uf_system_user }}"
+      comment: "Splunk service user"
+      shell: /usr/sbin/nologin
+      createhome: no
+
+  - name: install splunk binary from remote url
+    unarchive:
+      src: "{{ splunk_uf_install_url }}"
+      dest: /opt
+      remote_src: yes
+      creates: /opt/splunkforwarder/bin/splunk
+      owner: "{{ splunk_uf_system_user }}"
+      group: "{{ splunk_uf_system_user }}"
+
+  # Ansible will use the assumed user shell by default, which in this case is a /nologin
+  # shell.   To get around that, we use the `executable` argument to override the default.
+  - name: accept license and start splunk
+    shell: /opt/splunkforwarder/bin/splunk start --answer-yes --no-prompt --accept-license
+    args:
+        executable: /bin/sh
+    become_user: "{{ splunk_uf_system_user }}"
+
+  - name: enable boot-start
+    shell: "/opt/splunkforwarder/bin/splunk enable boot-start -user {{ splunk_uf_system_user}}"
+    when: splunk_uf_start_on_boot|bool
+
+  become: yes
+  tags:
+    - install
+
+- name: install inputs.conf via template
+  template:
+    src: "{{ splunk_uf_inputs_conf_template }}"
+    dest: /opt/splunkforwarder/etc/system/local/inputs.conf
+    owner: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_user }}"
+    mode: 0644
+  notify:
+    - restart splunkforwarder
+  tags:
+    - inputs
+
+- name: install outputs.conf via template
+  template:
+    src: "{{ splunk_uf_outputs_conf_template }}"
+    dest: /opt/splunkforwarder/etc/system/local/outputs.conf
+    owner: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_user }}"
+    mode: 0644
+  notify:
+    - restart splunkforwarder
+  tags:
+    - outputs

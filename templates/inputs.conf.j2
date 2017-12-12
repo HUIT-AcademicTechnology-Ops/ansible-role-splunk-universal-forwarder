@@ -1,0 +1,36 @@
+{% block inputs_default %}
+[default]
+{% if splunk_uf_inputs_default_host %}
+host = {{ splunk_uf_inputs_default_host }}
+{% endif %}
+{% if splunk_uf_inputs_default_index %}
+index = {{ splunk_uf_inputs_default_index }}
+{% endif %}
+{% if splunk_uf_inputs_default_extra_attributes %}
+{{ splunk_uf_inputs_default_extra_attributes }}
+{% endif %}
+{% endblock %}
+
+{% block inputs_monitors %}
+{% for monitor in splunk_uf_inputs_monitors %}
+[monitor://{{ monitor.path }}]
+{% if monitor.whitelist is defined %}
+{{ monitor.whitelist }}
+{% endif %}
+{% if monitor.blacklist is defined %}
+{{ monitor.whitelist }}
+{% endif %}
+{% if monitor.ignoreOlderThan is defined %}
+{{ monitor.ignoreOlderThan|int }}
+{% endif %}
+{% if monitor.recursive is defined %}
+{{ monitor.recursive }}
+{% endif %}
+{% endfor %}
+{% endblock %}
+
+{% block inputs_additional_forwarders %}
+{% if splunk_uf_inputs_additional_forwarders %}
+{{ inputs_additional_forwarders }}
+{% endif %}
+{% endblock %}

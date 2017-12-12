@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  author: Jaime Bermudez
+  description: Install and configure the Splunk Universal Forwarder on unix systems
+  company: Harvard University IT - Academic Technology
+  license: MIT
+  min_ansible_version: 2.0
+  platforms:
+    - name: GenericLinux
+     versions:
+      - all
+      - any

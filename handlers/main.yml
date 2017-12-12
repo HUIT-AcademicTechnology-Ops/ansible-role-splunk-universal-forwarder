@@ -1,0 +1,7 @@
+---
+# handlers file for splunk_forwarder
+
+- name: restart splunkforwarder
+  service:
+    name: splunk
+    state: restarted
