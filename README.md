@@ -75,7 +75,18 @@ splunk_uf_outputs_target_groups: []
 
 ## Overriding configuration templates
 
-You can override the forwarder inputs and outputs templates if the exposed variables don't cover an option you want to define.  You can either copy and modify the provided template, or extend it with [Jinja2 template inheritance](http://jinja.pocoo.org/docs/2.9/templates/#template-inheritance) and override the specific template block you need to change.
+You can override the forwarder inputs and outputs templates if the exposed variables don't cover an option you want to define.  You can either copy and modify the provided template, or extend it with [Jinja2 template inheritance](http://jinja.pocoo.org/docs/2.9/templates/#template-inheritance) and override the specific template block you need to change.  To override, you'll
+need to point one of the conf_template vars to your local template.
+
+## Skipping a configuration
+
+You may not want one of the local templates to be generated if, for example, you are pulling config from a deployment server
+via the CLI.   To prevent the installation of a template configuration you can simply blank out the desired conf_template
+location in your var declaration.  For example:
+```
+vars:
+    splunk_uf_inputs_conf_template: ""
+```
 
 ## Dependencies
 

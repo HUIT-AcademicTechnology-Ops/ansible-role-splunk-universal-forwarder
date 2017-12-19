@@ -19,7 +19,7 @@ splunk_uf_install_url: https://download.splunk.com/products/universalforwarder/r
 # ---
 splunk_uf_inputs_conf_template: inputs.conf.j2
 # Input attributes below are all optional
-splunk_uf_inputs_default_host: "$decideOnStartup"
+splunk_uf_inputs_default_host: ""
 # The global default is $decideOnStartup, which will look at the current ipv4 address and supply that in the form
 # of ip-10-x-x-x
 splunk_uf_inputs_default_index: ""
