@@ -51,7 +51,7 @@
     owner: "{{ splunk_uf_system_user }}"
     group: "{{ splunk_uf_system_user }}"
     mode: 0644
-  when: splunk_uf_inputs_conf_template
+  when: splunk_uf_inputs_conf_template | default(false)
   notify:
     - restart splunkforwarder
   tags:
@@ -64,7 +64,7 @@
     owner: "{{ splunk_uf_system_user }}"
     group: "{{ splunk_uf_system_user }}"
     mode: 0644
-  when: splunk_uf_outputs_conf_template
+  when: splunk_uf_outputs_conf_template | default(false)
   notify:
     - restart splunkforwarder
   tags:
