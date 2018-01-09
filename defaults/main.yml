@@ -5,13 +5,14 @@
 # Role installs binary to /opt/splunkforwarder - currently, non-configurable
 # ---
 splunk_uf_system_user: splunk
+splunk_uf_system_group: "{{ splunk_uf_system_user }}"
 # This user will own the forwarder installation and config files and the `splunkd` process will also run as this user.  If the
 # user doesn't exist, this role creates a user/group as the above with a no-login shell.  The default is to create a new splunk
 # user and rely on logs having world read access for this setup to work.   Note that if you don't use root, you can't read
 # syslog.  See http://docs.splunk.com/Documentation/Splunk/latest/Installation/RunSplunkasadifferentornon-rootuser for
 # requirements to run as a less privileged user.
 splunk_uf_start_on_boot: yes
-splunk_uf_install_url: https://download.splunk.com/products/universalforwarder/releases/6.6.4/linux/splunkforwarder-6.6.4-00895e76d346-Linux-x86_64.tgz
+splunk_uf_install_url: https://download.splunk.com/products/universalforwarder/releases/6.6.5/linux/splunkforwarder-6.6.5-b119a2a8b0ad-Linux-x86_64.tgz
 # Installations are done via the "universal" binary method instead of relying on the RPM or DEB package - it's easier to
 # install from the binary and it should work beyond RedHat/CentOS and Debian systems
 

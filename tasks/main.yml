@@ -6,7 +6,7 @@
   # these calls won't override anything about the user, including their login shell.
   - name: add splunk user group to system
     group:
-      name: "{{ splunk_uf_system_user }}"
+      name: "{{ splunk_uf_system_group }}"
       state: present
 
   # Allow for the creation of a home directory for this user, despite the nologin shell,
@@ -14,7 +14,7 @@
   - name: add splunk user
     user:
       name: "{{ splunk_uf_system_user }}"
-      group: "{{ splunk_uf_system_user }}"
+      group: "{{ splunk_uf_system_group }}"
       comment: "Splunk service user"
       shell: /usr/sbin/nologin
 
@@ -25,7 +25,7 @@
       remote_src: yes
       creates: /opt/splunkforwarder/bin/splunk
       owner: "{{ splunk_uf_system_user }}"
-      group: "{{ splunk_uf_system_user }}"
+      group: "{{ splunk_uf_system_group }}"
 
   # Ansible will use the assumed user shell by default, which in the case of a newly created
   # non-root user (i.e. a "splunk" user) is a nologin shell.   To get around that, we use the
@@ -49,7 +49,7 @@
     src: "{{ splunk_uf_inputs_conf_template }}"
     dest: /opt/splunkforwarder/etc/system/local/inputs.conf
     owner: "{{ splunk_uf_system_user }}"
-    group: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_group }}"
     mode: 0644
   when: splunk_uf_inputs_conf_template | default(false)
   notify:
@@ -62,7 +62,7 @@
     src: "{{ splunk_uf_outputs_conf_template }}"
     dest: /opt/splunkforwarder/etc/system/local/outputs.conf
     owner: "{{ splunk_uf_system_user }}"
-    group: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_group }}"
     mode: 0644
   when: splunk_uf_outputs_conf_template | default(false)
   notify:
