@@ -34,7 +34,7 @@
     assert:
       that:
         - splunk_uf_install_url is defined
-        - splunk_uf_deploy_server is defined
+        # - splunk_uf_deploy_server is defined
         - ansible_pkg_mgr is defined
         - ansible_pkg_mgr in ['yum', 'apt']
 
@@ -67,35 +67,34 @@
   # Ansible will use the assumed user shell by default, which in the case of a newly created
   # non-root user (i.e. a "splunk" user) is a nologin shell.   To get around that, we use the
   # `executable` argument to override the shell.
-  - name: accept license and start splunk
-    # shell: /opt/splunkforwarder/bin/splunk start --answer-yes --no-prompt --accept-license
-    shell: "/opt/splunkforwarder/bin/splunk set deploy-poll {{ splunk_uf_deploy_server }} --accept-license --answer-yes --auto-ports --no-prompt --gen-and-print-passwd"
+
+  # - name: accept license and start splunk
+  #   shell: "/opt/splunkforwarder/bin/splunk set deploy-poll {{ splunk_uf_deploy_server }} --accept-license --answer-yes --auto-ports --no-prompt --gen-and-print-passwd"
 
     # args:
     #     executable: /bin/sh
     # become_user: "{{ splunk_uf_system_user }}"
 
-  - name: enable boot-start
-    # shell: "/opt/splunkforwarder/bin/splunk enable boot-start -user {{ splunk_uf_system_user}}"
-    shell: "/opt/splunkforwarder/bin/splunk enable boot-start"
-    when: splunk_uf_start_on_boot|bool
+  # - name: enable boot-start
+  #   shell: "/opt/splunkforwarder/bin/splunk enable boot-start"
+  #   when: splunk_uf_start_on_boot|bool
 
   become: yes
   tags:
     - install
 
-- name: install inputs.conf via template
-  template:
-    src: "{{ splunk_uf_inputs_conf_template }}"
-    dest: /opt/splunkforwarder/etc/system/local/inputs.conf
-    owner: "{{ splunk_uf_system_user }}"
-    group: "{{ splunk_uf_system_group }}"
-    mode: 0644
-  when: splunk_uf_inputs_conf_template | default(false)
-  notify:
-    - restart splunkforwarder
-  tags:
-    - inputs
+# - name: install inputs.conf via template
+#   template:
+#     src: "{{ splunk_uf_inputs_conf_template }}"
+#     dest: /opt/splunkforwarder/etc/system/local/inputs.conf
+#     owner: "{{ splunk_uf_system_user }}"
+#     group: "{{ splunk_uf_system_group }}"
+#     mode: 0644
+#   when: splunk_uf_inputs_conf_template | default(false)
+#   notify:
+#     - restart splunkforwarder
+#   tags:
+#     - inputs
 
 # - name: install outputs.conf via template
 #   template:
