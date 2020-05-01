@@ -28,9 +28,6 @@
       groups: "{{ splunk_uf_system_group }}"
       append: yes
 
-  - name: install the splunk init script
-    command:  /opt/splunkforwarder/bin/splunk enable boot-start -user {{ splunk_uf_system_user|quote }}
-
   - name: store package installation result as boolean var
     set_fact:
       splunk_pkg_install: splunk_pkg_deb_install.changed or splunk_pkg_rpm_install.changed
