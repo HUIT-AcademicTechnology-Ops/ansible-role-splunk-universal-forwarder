@@ -3,108 +3,64 @@
 
 - block:
 
-  # If you choose to run the splunk forwarder as root or an otherwise existing user,
-  # these calls won't override anything about the user, including their login shell.
-
-  # - name: add splunk user group to system
-  #   group:
-  #     name: "{{ splunk_uf_system_group }}"
-  #     state: present
-
-  # Allow for the creation of a home directory for this user, despite the nologin shell,
-  # so that Splunk can store it's session information in it's own .splunk directory.
-
-  # - name: add splunk user
-  #   user:
-  #     name: "{{ splunk_uf_system_user }}"
-  #     group: "{{ splunk_uf_system_group }}"
-  #     comment: "Splunk service user"
-  #     shell: /usr/sbin/nologin
-
-  # - name: install splunk binary from remote url
-  #   unarchive:
-  #     src: "{{ splunk_uf_install_url }}"
-  #     dest: /opt
-  #     remote_src: yes
-  #     creates: /opt/splunkforwarder/bin/splunk
-  #     owner: "{{ splunk_uf_system_user }}"
-  #     group: "{{ splunk_uf_system_group }}"
-
   - name: Validate required parameters and environment
     assert:
       that:
         - splunk_uf_install_url is defined
-        # - splunk_uf_deploy_server is defined
         - ansible_pkg_mgr is defined
         - ansible_pkg_mgr in ['yum', 'apt']
 
-  - name: download splunk package
-    get_url:
-      url: "{{ splunk_uf_install_url }}"
-      dest: /tmp
-    register: splunk_download
-    until: splunk_download is success
-    retries: 3
-    delay: 2
-
   - name: install the splunk deb package
     apt:
-      deb: "{{ splunk_download.dest }}"
+      deb: "{{ splunk_uf_install_url }}"
     when: ansible_pkg_mgr == 'apt'
     register: splunk_pkg_deb_install
 
   - name: install the splunk rpm package
     yum:
-      name: "{{ splunk_download.dest }}"
+      name: "{{ splunk_uf_install_url }}"
     when: ansible_pkg_mgr == 'yum'
     register: splunk_pkg_rpm_install
+
+  - name: add splunk user to the system group
+    user:
+      name: "{{ splunk_uf_system_user }}"
+      groups: "{{ splunk_uf_system_group }}"
+      append: yes
+
+  - name: install the splunk init script
+    command:  /opt/splunkforwarder/bin/splunk enable boot-start -user {{ splunk_uf_system_user|quote }}
 
   - name: store package installation result as boolean var
     set_fact:
       splunk_pkg_install: splunk_pkg_deb_install.changed or splunk_pkg_rpm_install.changed
 
-
-  # Ansible will use the assumed user shell by default, which in the case of a newly created
-  # non-root user (i.e. a "splunk" user) is a nologin shell.   To get around that, we use the
-  # `executable` argument to override the shell.
-
-  # - name: accept license and start splunk
-  #   shell: "/opt/splunkforwarder/bin/splunk set deploy-poll {{ splunk_uf_deploy_server }} --accept-license --answer-yes --auto-ports --no-prompt --gen-and-print-passwd"
-
-    # args:
-    #     executable: /bin/sh
-    # become_user: "{{ splunk_uf_system_user }}"
-
-  # - name: enable boot-start
-  #   shell: "/opt/splunkforwarder/bin/splunk enable boot-start"
-  #   when: splunk_uf_start_on_boot|bool
-
   become: yes
   tags:
     - install
 
-# - name: install inputs.conf via template
-#   template:
-#     src: "{{ splunk_uf_inputs_conf_template }}"
-#     dest: /opt/splunkforwarder/etc/system/local/inputs.conf
-#     owner: "{{ splunk_uf_system_user }}"
-#     group: "{{ splunk_uf_system_group }}"
-#     mode: 0644
-#   when: splunk_uf_inputs_conf_template | default(false)
-#   notify:
-#     - restart splunkforwarder
-#   tags:
-#     - inputs
+- name: install inputs.conf via template
+  template:
+    src: "{{ splunk_uf_inputs_conf_template }}"
+    dest: /opt/splunkforwarder/etc/system/local/inputs.conf
+    owner: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_group }}"
+    mode: 0644
+  when: splunk_uf_inputs_conf_template | default(false)
+  notify:
+    - restart splunkforwarder
+  tags:
+    - inputs
 
-# - name: install outputs.conf via template
-#   template:
-#     src: "{{ splunk_uf_outputs_conf_template }}"
-#     dest: /opt/splunkforwarder/etc/system/local/outputs.conf
-#     owner: "{{ splunk_uf_system_user }}"
-#     group: "{{ splunk_uf_system_group }}"
-#     mode: 0644
-#   when: splunk_uf_outputs_conf_template | default(false)
-#   notify:
-#     - restart splunkforwarder
-#   tags:
-#     - outputs
+- name: install outputs.conf via template
+  template:
+    src: "{{ splunk_uf_outputs_conf_template }}"
+    dest: /opt/splunkforwarder/etc/system/local/outputs.conf
+    owner: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_group }}"
+    mode: 0644
+  when: splunk_uf_outputs_conf_template | default(false)
+  notify:
+    - restart splunkforwarder
+  tags:
+    - outputs
