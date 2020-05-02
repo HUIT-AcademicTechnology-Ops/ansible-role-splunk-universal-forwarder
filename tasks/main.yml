@@ -44,8 +44,8 @@
     group: "{{ splunk_uf_system_group }}"
     mode: 0644
   when: splunk_uf_inputs_conf_template | default(false)
-  notify:
-    - restart splunkforwarder
+  # notify:
+  #   - restart splunkforwarder
   tags:
     - inputs
 
@@ -57,7 +57,7 @@
     group: "{{ splunk_uf_system_group }}"
     mode: 0644
   when: splunk_uf_outputs_conf_template | default(false)
-  notify:
-    - restart splunkforwarder
+  # notify:
+  #   - restart splunkforwarder
   tags:
     - outputs
